@@ -1,4 +1,4 @@
-# modulo1/views.py - VERSIÓN COMPLETA Y CORREGIDA
+
 from django.db import models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -558,4 +558,5 @@ def verificar_usuarios(request):
         'total_personal': usuarios_personalizados.count(),
     }
     
+
     return render(request, 'debug_usuarios.html', context)

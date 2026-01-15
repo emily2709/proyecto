@@ -1,12 +1,10 @@
-# modulo1/models.py - VERSIÓN CORREGIDA
+
 from django.db import models
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User  # ✅ CORRECTO
+from django.contrib.auth.models import User 
 
 class Usuario(models.Model):
-    """Modelo personalizado de usuario"""
-    # ❌ NO uses prefijo "usuario_" si ya no lo tienes
-    # ✅ Estos son los nombres CORRECTOS según tu modelo anterior
+
     nombre = models.CharField("Nombre", max_length=100)
     apellido_paterno = models.CharField("Apellido Paterno", max_length=100)
     apellido_materno = models.CharField("Apellido Materno", max_length=100, blank=True, null=True)
@@ -38,4 +36,5 @@ class Usuario(models.Model):
     def save(self, *args, **kwargs):
         if self.password and not self.password.startswith(('pbkdf2_sha256$', 'bcrypt$', 'argon2')):
             self.password = make_password(self.password)
+
         super().save(*args, **kwargs)

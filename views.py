@@ -20,9 +20,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# ============================================================================
-# VISTAS PÚBLICAS
-# ============================================================================
+
 
 def home(request):
     """Página principal"""
@@ -30,19 +28,18 @@ def home(request):
 
 @csrf_protect
 def iniciar(request):
-    """Vista de login - ACEPTA username o email - CORREGIDA"""
-    # Si ya está autenticado, redirigir al home
+    
     if request.user.is_authenticated:
         next_url = request.GET.get('next', 'home')
         return redirect(next_url)
     
-    # Obtener URL de redirección desde GET
+  
     next_url = request.GET.get('next', 'home')
     
     if request.method == 'POST':
         username_or_email = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
-        next_url = request.POST.get('next', 'home')  # ¡IMPORTANTE! Obtener next del POST
+        next_url = request.POST.get('next', 'home')  
         
         if not username_or_email or not password:
             messages.error(request, 'Por favor, completa todos los campos')
@@ -50,13 +47,13 @@ def iniciar(request):
         
         logger.info(f"Intento de login con: {username_or_email}")
         
-        # Intentar autenticar primero como username
+      
         user = authenticate(request, username=username_or_email, password=password)
         
-        # Si falla, intentar buscar por email
+      
         if user is None:
             try:
-                # Buscar usuario por email (case-insensitive)
+               
                 user_by_email = User.objects.get(email__iexact=username_or_email)
                 user = authenticate(request, username=user_by_email.username, password=password)
             except User.DoesNotExist:
@@ -67,8 +64,7 @@ def iniciar(request):
             if user.is_active:
                 login(request, user)
                 messages.success(request, f'¡Bienvenido {user.username}!')
-                
-                # ¡ESTA ES LA LÍNEA CRÍTICA! Redirigir a next_url
+           
                 return redirect(next_url)
                 
             else:
@@ -76,24 +72,24 @@ def iniciar(request):
         else:
             messages.error(request, 'Usuario o contraseña incorrectos')
         
-        # Pasar next al template en caso de error
+    
         return render(request, 'iniciar.html', {'next': next_url})
     
-    # Para GET requests, pasar next al template
+  
     return render(request, 'iniciar.html', {'next': next_url})
 
 @csrf_protect
 def recuperar(request):
     """Vista de recuperación de contraseña - ÚNICA Y FUNCIONAL"""
     
-    # Si ya está autenticado, redirigir al home
+   
     if request.user.is_authenticated:
         return redirect('home')
     
     if request.method == 'POST':
         email = request.POST.get('email', '').strip().lower()
         
-        # Validar email
+        
         if not email:
             messages.error(request, '❌ Por favor ingresa un email válido.')
             return render(request, 'recuperar.html')
@@ -107,27 +103,25 @@ def recuperar(request):
         logger.info(f"Solicitud de recuperación para email: {email}")
         
         try:
-            # Buscar usuario por email en User de Django (PRIMERO)
+          
             usuario_django = None
             
-            # Intentar buscar en User de Django
+         
             try:
                 usuario_django = User.objects.get(email__iexact=email, is_active=True)
                 logger.info(f"Usuario encontrado en Django Auth: {usuario_django.username}")
             except User.DoesNotExist:
-                # Si no está en Django Auth, buscar en tu modelo Usuario
+              
                 try:
                     usuario_personalizado = Usuario.objects.get(usuario_email__iexact=email)
                     logger.info(f"Usuario encontrado en modelo personalizado: {usuario_personalizado.usuario_nombre}")
                     
-                    # Si existe en modelo personalizado pero no en Django Auth,
-                    # crear usuario en Django Auth automáticamente
-                    # (opcional, depende de tu lógica de negocio)
+                    
                     
                 except Usuario.DoesNotExist:
                     usuario_personalizado = None
             
-            # Si no se encontró en ninguna base de datos
+       
             if not usuario_django and not usuario_personalizado:
                 messages.error(request, 
                     '❌ No existe ningún usuario registrado con ese email.<br>'
@@ -135,10 +129,10 @@ def recuperar(request):
                 )
                 return render(request, 'recuperar.html', {'email_usuario': email})
             
-            # Si solo se encontró en modelo personalizado, usar esos datos
+           
             if not usuario_django and usuario_personalizado:
                 username = usuario_personalizado.usuario_email.split('@')[0]
-                # Crear usuario temporal para el proceso
+            
                 usuario_django, created = User.objects.get_or_create(
                     username=username,
                     email=usuario_personalizado.usuario_email,
@@ -151,17 +145,16 @@ def recuperar(request):
                 if created:
                     logger.info(f"Usuario creado automáticamente en Django Auth: {username}")
             
-            # Generar nueva contraseña segura
+          
             caracteres = string.ascii_letters + string.digits + "!@#$%&"
             nueva_contraseña = ''.join(random.choices(caracteres, k=12))
             
             logger.info(f"Generada nueva contraseña para: {usuario_django.username}")
             
-            # Actualizar contraseña en User de Django
+          
             usuario_django.set_password(nueva_contraseña)
             usuario_django.save()
             
-            # Actualizar contraseña en tu modelo Usuario si existe
             try:
                 usuario_personalizado = Usuario.objects.get(usuario_email__iexact=email)
                 usuario_personalizado.usuario_password = make_password(nueva_contraseña)
@@ -170,7 +163,7 @@ def recuperar(request):
             except Usuario.DoesNotExist:
                 logger.warning(f"Usuario no encontrado en modelo Usuario para {email}")
             
-            # Enviar email
+     
             subject = '🔐 Nueva Contraseña - IMCU CARBÓN PLAY'
             
             html_message = f"""
@@ -285,17 +278,13 @@ IMCU CARBÓN PLAY
         
         return render(request, 'recuperar.html')
     
-    # Si es GET, mostrar formulario vacío
+   
     return render(request, 'recuperar.html')
 
-# ============================================================================
-# REGISTRAR USUARIO (FALTA)
-# ============================================================================
 
 @csrf_protect
 def registrar_usuario(request):
-    """Registro de nuevos usuarios - COMPATIBLE con tu modelo"""
-    # Si ya está autenticado, redirigir al home
+
     if request.user.is_authenticated:
         return redirect('home')
     
@@ -308,7 +297,7 @@ def registrar_usuario(request):
         password = request.POST.get('password', '')
         password2 = request.POST.get('password2', '')
         
-        # Validaciones básicas
+     
         errors = []
         
         if not all([nombre, apellido_paterno, email, telefono, password]):
@@ -325,7 +314,7 @@ def registrar_usuario(request):
         except ValidationError:
             errors.append('Email inválido')
         
-        # Generar username único
+  
         base_username = email.split('@')[0]
         username = base_username
         counter = 1
@@ -333,11 +322,11 @@ def registrar_usuario(request):
             username = f"{base_username}{counter}"
             counter += 1
         
-        # Verificar email único en User de Django
+
         if User.objects.filter(email__iexact=email).exists():
             errors.append('Este email ya está registrado en el sistema')
         
-        # Verificar email único en tu modelo Usuario
+    
         if Usuario.objects.filter(usuario_email__iexact=email).exists():
             errors.append('Este email ya está registrado en usuarios personalizados')
         
@@ -353,7 +342,7 @@ def registrar_usuario(request):
             })
         
         try:
-            # 1. Crear usuario en Django
+        
             user = User.objects.create_user(
                 username=username,
                 email=email,
@@ -363,7 +352,7 @@ def registrar_usuario(request):
                 is_active=True
             )
             
-            # 2. Crear en tu modelo personalizado Usuario
+           
             Usuario.objects.create(
                 usuario_nombre=nombre,
                 usuario_apellido_paterno=apellido_paterno,
@@ -373,7 +362,7 @@ def registrar_usuario(request):
                 usuario_password=make_password(password),
             )
             
-            # 3. Iniciar sesión automáticamente
+           
             login(request, user)
             messages.success(request, f'¡Registro exitoso {nombre}! Ya puedes acceder al sistema.')
             return redirect('home')
@@ -384,9 +373,6 @@ def registrar_usuario(request):
     
     return render(request, 'registrar.html')
 
-# ============================================================================
-# LOGOUT
-# ============================================================================
 
 def logout_view(request):
     """Cerrar sesión"""
@@ -399,9 +385,7 @@ def logout_view(request):
     
     return redirect('iniciar')
 
-# ============================================================================
-# VISTAS PROTEGIDAS
-# ============================================================================
+
 
 @login_required(login_url='iniciar')
 def contacto(request):
@@ -411,16 +395,14 @@ def contacto(request):
 def tutoriales(request):
     return render(request, 'tutoriales.html')
 
-# ============================================================================
-# VISTAS DE ADMINISTRACIÓN PERSONALIZADAS
-# ============================================================================
+
 
 @staff_member_required
 @login_required(login_url='iniciar')
 def administracion_usuarios(request):
     """Vista principal de administración de usuarios - Usando tu modelo Usuario"""
-    # CORRECCIÓN: El campo correcto es 'creado' no 'usuario_creado'
-    usuarios = Usuario.objects.all().order_by('-creado')  # ← CAMBIADO AQUÍ
+  
+    usuarios = Usuario.objects.all().order_by('-creado')  
     return render(request, 'admin_usuarios.html', {'usuarios': usuarios})
 
 @staff_member_required
@@ -445,7 +427,7 @@ def create_usuario(request):
             return render(request, 'usuario.html')
         
         try:
-            # Crear solo en tu modelo Usuario (para administración)
+           
             Usuario.objects.create(
                 usuario_nombre=nombre,
                 usuario_apellido_paterno=apellido_paterno,
@@ -475,7 +457,7 @@ def update_usuario(request, usuario_id):
             usuario.usuario_apellido_materno = request.POST.get('apellido_materno', '').strip()
             nuevo_email = request.POST.get('email', '').strip().lower()
             
-            # Verificar si el email cambió y si ya existe
+    
             if nuevo_email != usuario.usuario_email and Usuario.objects.filter(usuario_email__iexact=nuevo_email).exclude(id=usuario_id).exists():
                 messages.error(request, 'Este email ya está registrado por otro usuario')
             else:
@@ -490,8 +472,7 @@ def update_usuario(request, usuario_id):
             usuario.save()
             messages.success(request, f'Usuario {usuario.usuario_nombre} actualizado')
             return redirect('administracion_usuarios')
-        
-        # Convertir nombres para el template
+       
         context = {
             'usuario': usuario,
             'nombre': usuario.usuario_nombre,
@@ -541,9 +522,7 @@ def search_usuario(request):
         'total': usuarios.count()
     })
 
-# ============================================================================
-# DEBUG - PARA VERIFICACIÓN
-# ============================================================================
+
 
 @staff_member_required
 def verificar_usuarios(request):
@@ -560,3 +539,4 @@ def verificar_usuarios(request):
     
 
     return render(request, 'debug_usuarios.html', context)
+

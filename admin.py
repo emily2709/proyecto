@@ -1,10 +1,10 @@
-# modulo1/admin.py - VERSIÓN CORREGIDA
+
 from django.contrib import admin
 from .models import Usuario
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
-    # ✅ Usa nombres SIN prefijo "usuario_"
+ 
     list_display = ['id', 'nombre', 'apellido_paterno', 
                     'email', 'telefono', 'activo', 'creado']
     
@@ -16,7 +16,6 @@ class UsuarioAdmin(admin.ModelAdmin):
     
     ordering = ['-creado']
     
-    # ✅ Fieldsets con nombres SIN prefijo
     fieldsets = (
         ('Información Personal', {
             'fields': ('nombre', 'apellido_paterno', 'apellido_materno')
@@ -31,4 +30,5 @@ class UsuarioAdmin(admin.ModelAdmin):
     )
     
     readonly_fields = ('creado', 'actualizado')
+
     

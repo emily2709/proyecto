@@ -1,0 +1,202 @@
+{% extends 'extras/navegacion.html' %}
+
+{% load static %}
+
+{% block pag %}
+
+<div class="all">
+   
+    <h1>🗑️ ELIMINAR USUARIO</h1>
+    
+   
+    <div style="text-align: center; margin: 20px 0 30px 0;">
+        <img src="{% static 'iniciar.png' %}" alt="Eliminar Usuario" class="img-medium">
+    </div>
+    
+    
+    <div style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
+        <h2 style="color: black; margin-bottom: 10px;">🔍 BUSCAR USUARIO</h2>
+        <p style="color: black; margin-bottom: 20px; font-size: 14px;">Ingrese los datos del usuario que desea eliminar</p>
+        
+        <form method="GET">
+            <div class="form-group">
+                <input type="text" 
+                       name="kword" 
+                       placeholder="Nombre, Email o ID del usuario..."
+                       value="{{ request.GET.kword|default:'' }}"
+                       style="width: 80%; max-width: 500px; padding: 12px 20px; border: 2px solid white; border-radius: 8px; font-size: 16px; margin: 0 auto;">
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button type="submit" style="background: #3498db; color: white; padding: 10px 25px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                    🔍 BUSCAR
+                </button>
+                <button type="reset" style="background: #3498db; color: white; padding: 10px 25px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-left: 10px;">
+                    Eliminar
+                </button>
+            </div>
+        </form>
+    </div>
+    
+   
+    {% if messages %}
+        <div style="max-width: 800px; margin: 20px auto;">
+            {% for message in messages %}
+                <div class="alert {% if 'eliminado' in message|lower %}alert-success{% else %}alert-info{% endif %}" 
+                     style="text-align: center;">
+                    {% if 'eliminado' in message|lower %}✅{% else %}ℹ️{% endif %}
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="alert alert-error" style="text-align: center; max-width: 800px; margin: 20px auto;">
+            ⚠️ {{ error }}
+        </div>
+    {% endif %}
+    
+  
+    {% if usuario %}
+    <div style="background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin: 30px 0; border: 2px solid #dc3545;">
+        
+        <div style="background: #dc3545; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">⚠️ USUARIO ENCONTRADO</h3>
+            <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 14px;">
+                {{ usuario.username }}
+            </span>
+        </div>
+        
+      
+        <div style="padding: 25px;">
+           
+            <div style="margin-bottom: 25px;">
+                <div style="display: flex; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <span style="width: 150px; font-weight: 600; color: #2c3e50;">ID:</span>
+                    <span style="flex: 1; color: #4a6572;">{{ usuario.id }}</span>
+                </div>
+                <div style="display: flex; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <span style="width: 150px; font-weight: 600; color: #2c3e50;">Email:</span>
+                    <span style="flex: 1; color: #4a6572;">{{ usuario.email|default:"No especificado" }}</span>
+                </div>
+                <div style="display: flex; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <span style="width: 150px; font-weight: 600; color: #2c3e50;">Nombre:</span>
+                    <span style="flex: 1; color: #4a6572;">{{ usuario.get_full_name|default:"No especificado" }}</span>
+                </div>
+                <div style="display: flex; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <span style="width: 150px; font-weight: 600; color: #2c3e50;">Fecha registro:</span>
+                    <span style="flex: 1; color: #4a6572;">{{ usuario.date_joined|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div style="display: flex; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <span style="width: 150px; font-weight: 600; color: #2c3e50;">Tipo:</span>
+                    <span style="flex: 1; color: {% if usuario.is_superuser %}#dc3545{% else %}#28a745{% endif %}; font-weight: 600;">
+                        {% if usuario.is_superuser %}Superusuario{% else %}Usuario Normal{% endif %}
+                    </span>
+                </div>
+                <div style="display: flex; padding: 10px 0;">
+                    <span style="width: 150px; font-weight: 600; color: #2c3e50;">Estado:</span>
+                    <span style="flex: 1; color: {% if usuario.is_active %}#28a745{% else %}#dc3545{% endif %}; font-weight: 600;">
+                        {% if usuario.is_active %}✅ Activo{% else %}❌ Inactivo{% endif %}
+                    </span>
+                </div>
+            </div>
+            
+          
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h4 style="color: #856404; margin-bottom: 10px;">🚫 RESTRICCIONES</h4>
+                <ul style="list-style: none; padding: 0; color: #856404;">
+                    {% if usuario.is_superuser %}
+                        <li style="padding: 8px 0; color: #dc3545;">❌ No se pueden eliminar superusuarios</li>
+                    {% endif %}
+                    {% if usuario == request.user %}
+                        <li style="padding: 8px 0; color: #dc3545;">❌ No puedes eliminarte a ti mismo</li>
+                    {% endif %}
+                    <li style="padding: 8px 0;">⚠️ Esta acción es permanente</li>
+                    <li style="padding: 8px 0;">⚠️ No se puede deshacer</li>
+                </ul>
+            </div>
+            
+           
+            {% if not usuario.is_superuser and usuario != request.user %}
+            <form method="POST" id="deleteForm" style="text-align: center;">
+                {% csrf_token %}
+                <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+                
+                <div style="margin-bottom: 25px;">
+                    <label for="confirmacion" style="display: block; margin-bottom: 10px; font-weight: 600; color: #721c24;">
+                        Para confirmar, escribe <strong>"ELIMINAR"</strong>:
+                    </label>
+                    <input type="text" 
+                           id="confirmacion" 
+                           name="confirmacion" 
+                           placeholder="Escribe ELIMINAR aquí"
+                           style="width: 80%; max-width: 300px; padding: 12px; border: 2px solid #dc3545; border-radius: 6px; font-size: 16px; text-align: center; font-weight: 600;"
+                           oninput="toggleDeleteButton()">
+                    <p style="color: #6c757d; font-size: 14px; margin-top: 8px;">
+                        Debes escribir exactamente la palabra en mayúsculas
+                    </p>
+                </div>
+                
+                <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+                    <button type="button" onclick="confirmDelete()" id="deleteButton" disabled 
+                            style="background: #dc3545; color: white; padding: 12px 30px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; opacity: 0.5;">
+                         CONFIRMAR ELIMINACIÓN
+                    </button>
+                    <a href="{% url 'delete_usuario' %}" 
+                       style="background: #6c757d; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: 600; display: inline-block;">
+                         CANCELAR
+                    </a>
+                </div>
+            </form>
+            {% else %}
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">
+                    <p style="color: #dc3545; font-weight: 600; margin-bottom: 15px;">
+                        🚫 Este usuario no puede ser eliminado por restricciones del sistema.
+                    </p>
+                    <a href="{% url 'delete_usuario' %}" 
+                       style="background: #6c757d; color: white; padding: 10px 25px; border-radius: 6px; text-decoration: none; font-weight: 600; display: inline-block;">
+                        🔄 BUSCAR OTRO USUARIO
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+   
+    
+       <a href="{% url 'home' %}" 
+                style="display: inline-block; padding: 10px 30px; background-color: #3498db; 
+                    color: white; text-decoration: none; border-radius: 4px; 
+                    font-weight: 500; font-size: 16px;">
+                    regresar al Inicio
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleDeleteButton() {
+        const input = document.getElementById('confirmacion');
+        const button = document.getElementById('deleteButton');
+        
+        if (input.value.toUpperCase() === 'ELIMINAR') {
+            button.disabled = false;
+            button.style.opacity = '1';
+        } else {
+            button.disabled = true;
+            button.style.opacity = '0.5';
+        }
+    }
+    
+    function confirmDelete() {
+        if (confirm('¿ESTÁS SEGURO DE ELIMINAR ESTE USUARIO?\n\n⚠️ Esta acción es PERMANENTE\n⚠️ NO se puede deshacer\n⚠️ Se perderán todos los datos del usuario')) {
+            document.getElementById('deleteForm').submit();
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', toggleDeleteButton);
+</script>
+
+{% endblock %}

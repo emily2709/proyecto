@@ -1,0 +1,401 @@
+{% extends 'extras/navegacion.html' %}
+
+{% load static %}
+
+
+{% block pag %}
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto IMCUFIDE Villa del Carbón</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <div class="contact-card">
+        <div class="header">
+            <h1><i class="fas fa-address-card"></i> Contacto IMCUFIDE</h1>
+            <p>Instituto Municipal de Cultura Física y Deporte de Villa del Carbón</p>
+        </div>
+        
+        <div class="content">
+            <div class="contact-info">
+                <div class="info-section">
+                    <h3><i class="fas fa-building"></i> Información de Contacto</h3>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>IMCUFIDE Villa del Carbón</strong>
+                            <span>Instituto Municipal de Cultura Física y Deporte</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-pin"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>Dirección</strong>
+                            <span>Calle Juárez S/N, Centro, Villa del Carbón, Estado de México, México</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>Teléfonos</strong>
+                            <span>+52 (55) 1234 5678</span>
+                            <span>+52 (55) 8765 4321</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>Horario de Atención</strong>
+                            <span>Lunes a Viernes: 9:00 AM - 6:00 PM</span>
+                            <span>Sábados: 9:00 AM - 2:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3><i class="fas fa-envelope"></i> Correos Electrónicos</h3>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-at"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>Información General</strong>
+                            <a href="mailto:contacto@imcufide-villacarbon.gob.mx">contacto@imcufide-villacarbon.gob.mx</a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>Actividades Deportivas</strong>
+                            <a href="mailto:deportes@imcufide-villacarbon.gob.mx">deportes@imcufide-villacarbon.gob.mx</a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>Eventos y Torneos</strong>
+                            <a href="mailto:eventos@imcufide-villacarbon.gob.mx">eventos@imcufide-villacarbon.gob.mx</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3><i class="fas fa-network-wired"></i> Redes Sociales</h3>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>Facebook</strong>
+                            <a href="https://facebook.com/imcufidevillacarbon" target="_blank">facebook.com/imcufidevillacarbon</a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>Twitter</strong>
+                            <a href="https://twitter.com/imcufidevc" target="_blank">twitter.com/imcufidevc</a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="contact-details">
+                            <strong>Instagram</strong>
+                            <a href="https://instagram.com/imcufidevillacarbon" target="_blank">instagram.com/imcufidevillacarbon</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="map-section">
+                <div class="map-header">
+                    <h3><i class="fas fa-map-marked-alt"></i> Ubicación en el Mapa</h3>
+                    <div class="map-coordinates">
+                        <span><i class="fas fa-globe-americas"></i> 19.7174, -99.4722</span>
+                    </div>
+                </div>
+                
+               
+                <div id="map" style="width: 100%; height: 400px; border: 2px solid #4a6491; border-radius: 10px;"></div>
+                
+                <div class="map-controls">
+                    <div class="map-instructions">
+                        <i class="fas fa-info-circle"></i> 
+                        <span>Mueve el mapa arrastrando, acerca/aleja con la rueda del mouse</span>
+                    </div>
+                    
+                    <div class="map-buttons">
+                        <button class="map-btn" id="locate-btn">
+                            <i class="fas fa-location-arrow"></i> Mi Ubicación
+                        </button>
+                        <button class="map-btn" id="reset-btn">
+                            <i class="fas fa-sync-alt"></i> Restablecer Vista
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background-color: #f0f7ff; border-radius: 8px; border-left: 4px solid #4a6491;">
+                    <h4 style="color: #2c3e50; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-directions"></i> Cómo llegar
+                    </h4>
+                    <p style="color: #555; font-size: 14px; line-height: 1.5;">
+                        IMCUFIDE se encuentra en el centro de Villa del Carbón, cerca de la Presidencia Municipal. 
+                        Desde la carretera federal, tomar la salida hacia el centro y seguir las señales de la plaza principal.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+      
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM cargado - Inicializando mapa...");
+            
+           
+           
+            const imcufideLat = 19.7174;  
+            const imcufideLng = -99.4722;
+            
+            try {
+              
+                const map = L.map('map').setView([imcufideLat, imcufideLng], 15);
+                
+                console.log("Mapa inicializado correctamente");
+                
+               
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    maxZoom: 19
+                }).addTo(map);
+                
+               
+                const imcufideIcon = L.divIcon({
+                    className: 'custom-icon',
+                    html: '<div style="background-color: #e74c3c; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);"><i class="fas fa-dumbbell" style="font-size: 22px;"></i></div>',
+                    iconSize: [50, 50],
+                    iconAnchor: [25, 50],
+                    popupAnchor: [0, -50]
+                });
+                
+                const imcufideMarker = L.marker([imcufideLat, imcufideLng], {icon: imcufideIcon}).addTo(map);
+                
+                imcufideMarker.bindPopup(`
+                    <div style="min-width: 250px; font-family: Arial, sans-serif;">
+                        <div style="background: linear-gradient(135deg, #2c3e50, #4a6491); color: white; padding: 12px; border-radius: 5px 5px 0 0; margin: -12px -12px 12px -12px; text-align: center;">
+                            <strong style="font-size: 16px;"><i class="fas fa-dumbbell"></i> IMCUFIDE VILLA DEL CARBÓN</strong>
+                        </div>
+                        <p style="margin: 8px 0; font-weight: bold;">Instituto Municipal de Cultura Física y Deporte</p>
+                        <p style="margin: 6px 0; font-size: 14px;"><i class="fas fa-map-marker-alt"></i> Calle Juárez S/N, Centro</p>
+                        <p style="margin: 6px 0; font-size: 14px;"><i class="fas fa-phone"></i> +52 (55) 1234 5678</p>
+                        <p style="margin: 6px 0; font-size: 14px;"><i class="fas fa-clock"></i> Lunes a Viernes: 9:00 AM - 6:00 PM</p>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center;">
+                            <i class="fas fa-info-circle"></i> Haz clic fuera para cerrar
+                        </div>
+                    </div>
+                `);
+                
+               
+                setTimeout(() => {
+                    imcufideMarker.openPopup();
+                }, 1000);
+                
+          
+                L.circle([imcufideLat, imcufideLng], {
+                    color: '#4a6491',
+                    fillColor: '#4a6491',
+                    fillOpacity: 0.1,
+                    radius: 200
+                }).addTo(map);
+                
+                L.control.scale({imperial: false, metric: true}).addTo(map);
+                
+            
+                const originalView = {
+                    center: [imcufideLat, imcufideLng],
+                    zoom: 15
+                };
+                
+                
+                document.getElementById('locate-btn').addEventListener('click', function() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                const userLat = position.coords.latitude;
+                                const userLng = position.coords.longitude;
+                                
+                                console.log("Ubicación del usuario encontrada:", userLat, userLng);
+                                
+                               
+                                const userIcon = L.divIcon({
+                                    className: 'user-location-icon',
+                                    html: '<div style="background-color: #27ae60; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4);"><i class="fas fa-user" style="font-size: 18px;"></i></div>',
+                                    iconSize: [40, 40],
+                                    iconAnchor: [20, 40],
+                                    popupAnchor: [0, -40]
+                                });
+                                
+                            
+                                L.marker([userLat, userLng], {icon: userIcon})
+                                    .addTo(map)
+                                    .bindPopup('<b style="font-size: 14px;">Tu ubicación actual</b><br><small>Lat: ' + userLat.toFixed(6) + '<br>Lng: ' + userLng.toFixed(6) + '</small>')
+                                    .openPopup();
+                                
+                              
+                                L.polyline([
+                                    [userLat, userLng],
+                                    [imcufideLat, imcufideLng]
+                                ], {
+                                    color: '#e74c3c',
+                                    weight: 4,
+                                    opacity: 0.8,
+                                    dashArray: '15, 10'
+                                }).addTo(map);
+                                
+                              
+                                const bounds = L.latLngBounds(
+                                    [userLat, userLng],
+                                    [imcufideLat, imcufideLng]
+                                );
+                                map.fitBounds(bounds, { padding: [100, 100] });
+                                
+                               
+                                const locateBtn = document.getElementById('locate-btn');
+                                locateBtn.innerHTML = '<i class="fas fa-check"></i> Ubicación Encontrada';
+                                locateBtn.style.backgroundColor = '#27ae60';
+                                
+                                setTimeout(() => {
+                                    locateBtn.innerHTML = '<i class="fas fa-location-arrow"></i> Mi Ubicación';
+                                    locateBtn.style.backgroundColor = '#4a6491';
+                                }, 3000);
+                                
+                            },
+                            (error) => {
+                                console.error("Error al obtener ubicación:", error);
+                                alert("No se pudo obtener tu ubicación. Asegúrate de que los permisos de ubicación estén habilitados en tu navegador.");
+                            },
+                            {
+                                enableHighAccuracy: true,
+                                timeout: 10000,
+                                maximumAge: 0
+                            }
+                        );
+                    } else {
+                        alert("Tu navegador no soporta geolocalización. Actualiza a una versión más reciente.");
+                    }
+                });
+                
+                
+                document.getElementById('reset-btn').addEventListener('click', function() {
+                    map.setView(originalView.center, originalView.zoom);
+                    
+                    const resetBtn = document.getElementById('reset-btn');
+                    resetBtn.innerHTML = '<i class="fas fa-check"></i> Vista Restablecida';
+                    resetBtn.style.backgroundColor = '#27ae60';
+                    
+                    setTimeout(() => {
+                        resetBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Restablecer Vista';
+                        resetBtn.style.backgroundColor = '#4a6491';
+                    }, 2000);
+                });
+                
+              
+                L.control.zoom({
+                    position: 'topright'
+                }).addTo(map);
+                
+                console.log("Mapa configurado completamente");
+                
+            } catch (error) {
+                console.error("Error al cargar el mapa:", error);
+                document.getElementById('map').innerHTML = 
+                    '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #f8f9fa; color: #666; text-align: center; padding: 20px;">' +
+                    '<i class="fas fa-map-marked-alt" style="font-size: 48px; margin-bottom: 20px; color: #4a6491;"></i>' +
+                    '<h3>Error al cargar el mapa</h3>' +
+                    '<p>Por favor, verifica tu conexión a internet e intenta recargar la página.</p>' +
+                    '<button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #4a6491; color: white; border: none; border-radius: 5px; cursor: pointer;">' +
+                    '<i class="fas fa-redo"></i> Recargar Página' +
+                    '</button>' +
+                    '</div>';
+            }
+        });
+        
+       
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                .map-btn {
+                    padding: 10px 20px;
+                    background-color: #4a6491;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: background-color 0.3s;
+                }
+                
+                .map-btn:hover {
+                    background-color: #2c3e50;
+                }
+                
+                .map-controls {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-top: 15px;
+                    padding: 10px;
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    font-size: 14px;
+                }
+                
+                @media (max-width: 768px) {
+                    .map-controls {
+                        flex-direction: column;
+                        gap: 10px;
+                    }
+                }
+            </style>
+        `);
+    </script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,417 @@
+{% extends 'extras/navegacion.html' %}
+
+{% load static %}
+
+{% block pag %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuarios</title>
+</head>
+<body>
+    <h1>📋 Lista de Usuarios</h1>
+    
+    <div style="text-align: center; margin-bottom: 30px;">
+        <img src="{% static 'iniciar.png' %}" alt="Usuarios" 
+             style="width: 100px; height: 100px; border-radius: 50%; 
+                    object-fit: cover; border: 2px solid #eee;">
+    </div>
+    
+    
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); 
+                gap: 15px; margin-bottom: 30px;">
+        <div style="background: #3498db; color: white; padding: 20px; 
+                    border-radius: 8px; text-align: center;">
+            <div style="font-size: 32px; font-weight: bold;">{{ total_usuarios }}</div>
+            <div>Total Usuarios</div>
+        </div>
+        
+        <div style="background: #28a745; color: white; padding: 20px; 
+                    border-radius: 8px; text-align: center;">
+            <div style="font-size: 32px; font-weight: bold;">{{ usuarios_activos }}</div>
+            <div>Usuarios Activos</div>
+        </div>
+        
+        <div style="background: #ffc107; color: #333; padding: 20px; 
+                    border-radius: 8px; text-align: center;">
+            <div style="font-size: 32px; font-weight: bold;">
+                {{ total_usuarios|add:"-usuarios_activos" }}
+            </div>
+            <div>Usuarios Inactivos</div>
+        </div>
+        
+        <div style="background: #dc3545; color: white; padding: 20px; 
+                    border-radius: 8px; text-align: center;">
+            <div style="font-size: 32px; font-weight: bold;">{{ superusuarios }}</div>
+            <div>Superusuarios</div>
+        </div>
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; 
+                margin-bottom: 30px; display: flex; justify-content: space-between; 
+                align-items: center; flex-wrap: wrap; gap: 15px;">
+        
+       
+        <div>
+            <form method="GET" action="{% url 'update_usuario' %}" 
+                  style="display: flex; gap: 10px;">
+                <input type="text" 
+                       name="kword" 
+                       placeholder="Buscar usuario..." 
+                       style="padding: 10px; border: 2px solid #ddd; 
+                              border-radius: 6px; width: 250px;">
+                <button type="submit" 
+                        style="padding: 10px 20px; background: #3498db; 
+                               color: white; border: none; border-radius: 6px;">
+                    🔍 Buscar
+                </button>
+            </form>
+        </div>
+        
+      
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'create_usuario' %}" 
+               style="background: #28a745; color: white; padding: 10px 20px; 
+                      text-decoration: none; border-radius: 6px; 
+                      font-weight: 600;">
+                ➕ Nuevo Usuario
+            </a>
+            
+            <a href="{% url 'update_usuario' %}" 
+               style="background: #007bff; color: white; padding: 10px 20px; 
+                      text-decoration: none; border-radius: 6px; 
+                      font-weight: 600;">
+                ✏️ Editar Usuario
+            </a>
+            
+            <a href="{% url 'delete_usuario' %}" 
+               style="background: #dc3545; color: white; padding: 10px 20px; 
+                      text-decoration: none; border-radius: 6px; 
+                      font-weight: 600;">
+                🗑️ Eliminar Usuario
+            </a>
+        </div>
+    </div>
+    
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div style="background: {% if 'eliminado' in message|lower or 'error' in message|lower %}#f8d7da{% else %}#d4edda{% endif %}; 
+                       color: {% if 'eliminado' in message|lower or 'error' in message|lower %}#721c24{% else %}#155724{% endif %}; 
+                       padding: 15px; margin: 20px 0; border-radius: 6px; 
+                       border-left: 5px solid {% if 'eliminado' in message|lower or 'error' in message|lower %}#dc3545{% else %}#28a745{% endif %};">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    
+    <div style="overflow-x: auto; margin-bottom: 30px;">
+        <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+            <thead>
+                <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                          color: white;">
+                    <th style="padding: 15px; border: 1px solid #ddd; text-align: center; width: 60px;">
+                        ID
+                    </th>
+                    <th style="padding: 15px; border: 1px solid #ddd; text-align: left;">
+                        Usuario
+                    </th>
+                    <th style="padding: 15px; border: 1px solid #ddd; text-align: left;">
+                        Nombre Completo
+                    </th>
+                    <th style="padding: 15px; border: 1px solid #ddd; text-align: left;">
+                        Email
+                    </th>
+                    <th style="padding: 15px; border: 1px solid #ddd; text-align: center; width: 100px;">
+                        Estado
+                    </th>
+                    <th style="padding: 15px; border: 1px solid #ddd; text-align: center; width: 120px;">
+                        Tipo
+                    </th>
+                    <th style="padding: 15px; border: 1px solid #ddd; text-align: center; width: 180px;">
+                        Fecha Registro
+                    </th>
+                    <th style="padding: 15px; border: 1px solid #ddd; text-align: center; width: 200px;">
+                        Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in usuarios %}
+                <tr style="background: {% cycle '#ffffff' '#f9f9f9' %}; 
+                          transition: background 0.3s;">
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; 
+                              font-weight: bold; color: #666;">
+                        {{ user.id }}
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        <div style="font-weight: 600; color: #2c3e50;">
+                            {{ user.username }}
+                        </div>
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        {% if user.get_full_name %}
+                            {{ user.get_full_name }}
+                        {% else %}
+                            <span style="color: #999; font-style: italic;">
+                                No especificado
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        {{ user.email|default:"-" }}
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                        {% if user.is_active %}
+                            <span style="background: #28a745; color: white; padding: 5px 10px; 
+                                        border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                ✅ Activo
+                            </span>
+                        {% else %}
+                            <span style="background: #dc3545; color: white; padding: 5px 10px; 
+                                        border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                ❌ Inactivo
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                        {% if user.is_superuser %}
+                            <span style="background: #dc3545; color: white; padding: 5px 10px; 
+                                        border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                👑 Superadmin
+                            </span>
+                        {% elif user.is_staff %}
+                            <span style="background: #ffc107; color: #333; padding: 5px 10px; 
+                                        border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                ⚙️ Staff
+                            </span>
+                        {% else %}
+                            <span style="background: #6c757d; color: white; padding: 5px 10px; 
+                                        border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                👤 Usuario
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; 
+                              color: #666; font-size: 14px;">
+                        {{ user.date_joined|date:"d/m/Y" }}<br>
+                        <small>{{ user.date_joined|date:"H:i" }}</small>
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                        <div style="display: flex; gap: 8px; justify-content: center;">
+                            
+                            <a href="{% url 'update_usuario' %}?kword={{ user.id }}" 
+                               style="background: #17a2b8; color: white; padding: 6px 12px; 
+                                      text-decoration: none; border-radius: 4px; font-size: 12px;
+                                      display: flex; align-items: center; gap: 4px;">
+                                👁️ Ver
+                            </a>
+                            
+                           
+                            <a href="{% url 'update_usuario' %}?kword={{ user.id }}" 
+                               style="background: #28a745; color: white; padding: 6px 12px; 
+                                      text-decoration: none; border-radius: 4px; font-size: 12px;
+                                      display: flex; align-items: center; gap: 4px;">
+                                ✏️ Editar
+                            </a>
+                            
+                           
+                            <a href="{% url 'delete_usuario' %}?kword={{ user.id }}" 
+                               style="background: #dc3545; color: white; padding: 6px 12px; 
+                                      text-decoration: none; border-radius: 4px; font-size: 12px;
+                                      display: flex; align-items: center; gap: 4px;">
+                                🗑️ Eliminar
+                            </a>
+                        </div>
+                        
+                        
+                        <div style="margin-top: 8px; display: flex; gap: 8px; justify-content: center;">
+                            {% if user.is_active and not user.is_superuser %}
+                                <form method="POST" action="{% url 'desactivar_usuario' user.id %}" 
+                                      style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            onclick="return confirm('¿Desactivar usuario {{ user.username }}?')"
+                                            style="background: #ffc107; color: #333; padding: 4px 8px; 
+                                                   border: none; border-radius: 4px; font-size: 11px;
+                                                   cursor: pointer; display: flex; align-items: center; gap: 3px;">
+                                        ⚠️ Desactivar
+                                    </button>
+                                </form>
+                            {% elif not user.is_active %}
+                                <form method="POST" action="{% url 'activar_usuario' user.id %}" 
+                                      style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            onclick="return confirm('¿Activar usuario {{ user.username }}?')"
+                                            style="background: #20c997; color: white; padding: 4px 8px; 
+                                                   border: none; border-radius: 4px; font-size: 11px;
+                                                   cursor: pointer; display: flex; align-items: center; gap: 3px;">
+                                        ✅ Activar
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" 
+                        style="padding: 40px; text-align: center; color: #666;">
+                        <div style="font-size: 18px; margin-bottom: 10px;">
+                            📭 No hay usuarios registrados
+                        </div>
+                        <a href="{% url 'create_usuario' %}" 
+                           style="background: #28a745; color: white; padding: 10px 20px; 
+                                  text-decoration: none; border-radius: 6px; 
+                                  display: inline-block;">
+                            ➕ Crear primer usuario
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+   
+    {% if usuarios.has_other_pages %}
+    <div style="text-align: center; margin-top: 30px;">
+        <div style="display: inline-flex; gap: 5px;">
+            {% if usuarios.has_previous %}
+                <a href="?page={{ usuarios.previous_page_number }}" 
+                   style="padding: 8px 12px; background: #3498db; color: white; 
+                          text-decoration: none; border-radius: 4px;">
+                    ← Anterior
+                </a>
+            {% endif %}
+            
+            {% for num in usuarios.paginator.page_range %}
+                {% if usuarios.number == num %}
+                    <span style="padding: 8px 12px; background: #2c3e50; color: white; 
+                                 border-radius: 4px;">
+                        {{ num }}
+                    </span>
+                {% elif num > usuarios.number|add:'-3' and num < usuarios.number|add:'3' %}
+                    <a href="?page={{ num }}" 
+                       style="padding: 8px 12px; background: #ddd; color: #333; 
+                              text-decoration: none; border-radius: 4px;">
+                        {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if usuarios.has_next %}
+                <a href="?page={{ usuarios.next_page_number }}" 
+                   style="padding: 8px 12px; background: #3498db; color: white; 
+                          text-decoration: none; border-radius: 4px;">
+                    Siguiente →
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+   
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; 
+                margin-top: 30px; border-left: 5px solid #3498db;">
+        <h3 style="color: #2c3e50; margin-bottom: 15px;">📊 Información del Sistema</h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            <div>
+                <strong>Total de usuarios registrados:</strong> {{ total_usuarios }}
+            </div>
+            <div>
+                <strong>Usuarios activos:</strong> {{ usuarios_activos }}
+                ({{ usuarios_activos|floatformat:0 }}%)
+            </div>
+            <div>
+                <strong>Superusuarios:</strong> {{ superusuarios }}
+            </div>
+            <div>
+                <strong>Último usuario registrado:</strong> 
+                {% if usuarios %}
+                    {{ usuarios.last.username }} ({{ usuarios.last.date_joined|date:"d/m/Y" }})
+                {% else %}
+                    No hay usuarios
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+   
+    <div style="text-align: center; margin-top: 40px; padding-top: 20px; 
+                border-top: 1px solid #eee;">
+        <h3 style="color: #666; margin-bottom: 20px;">🚀 Acciones Rápidas</h3>
+        
+        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <a href="{% url 'create_usuario' %}" 
+               style="background: #28a745; color: white; padding: 12px 25px; 
+                      text-decoration: none; border-radius: 6px; font-weight: 600;
+                      display: flex; align-items: center; gap: 8px;">
+                ➕ Crear Nuevo Usuario
+            </a>
+            
+            <a href="{% url 'update_usuario' %}" 
+               style="background: #007bff; color: white; padding: 12px 25px; 
+                      text-decoration: none; border-radius: 6px; font-weight: 600;
+                      display: flex; align-items: center; gap: 8px;">
+                ✏️ Buscar para Editar
+            </a>
+            
+            <a href="{% url 'delete_usuario' %}" 
+               style="background: #dc3545; color: white; padding: 12px 25px; 
+                      text-decoration: none; border-radius: 6px; font-weight: 600;
+                      display: flex; align-items: center; gap: 8px;">
+                🗑️ Buscar para Eliminar
+            </a>
+            
+            <a href="{% url 'home' %}" 
+               style="background: #6c757d; color: white; padding: 12px 25px; 
+                      text-decoration: none; border-radius: 6px; font-weight: 600;
+                      display: flex; align-items: center; gap: 8px;">
+                🏠 Ir al Inicio
+            </a>
+        </div>
+    </div>
+    
+
+    <script>
+        
+        function confirmarAccion(accion, usuario) {
+            return confirm(`¿Estás seguro de que quieres ${accion} al usuario "${usuario}"?`);
+        }
+        
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const buscarInput = document.querySelector('input[name="kword"]');
+            if (buscarInput) {
+                buscarInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.form.submit();
+                    }
+                });
+            }
+        });
+       
+        document.addEventListener('DOMContentLoaded', function() {
+            const filas = document.querySelectorAll('tbody tr');
+            filas.forEach(fila => {
+                fila.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f0f8ff';
+                });
+                fila.addEventListener('mouseleave', function() {
+                    const index = Array.from(this.parentNode.children).indexOf(this);
+                    this.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f9f9f9';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+{% endblock %}

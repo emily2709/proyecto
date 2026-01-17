@@ -1,0 +1,534 @@
+{% extends 'extras/navegacion.html' %}
+
+{% load static %}
+
+{% block pag %}
+<style>
+    /* Estilos para la página de tutoriales */
+    .all {
+        padding: 30px;
+        width: calc(100% - 60px);
+        margin: 30px auto;
+        background: rgb(239, 239, 241);
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        min-height: 600px;
+    }
+    
+    .tutoriales-container {
+        display: flex;
+        gap: 30px;
+    }
+    
+    /* Menú lateral izquierdo */
+    .menu-lateral {
+        width: 320px; /* Más ancho */
+        background-color: #2c3e50;
+        color: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        height: fit-content;
+    }
+    
+    .menu-lateral h2 {
+        color: white;
+        margin-bottom: 25px;
+        text-align: center;
+        font-size: 24px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+    }
+    
+    .menu-lista {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .menu-lista li {
+        margin-bottom: 15px;
+    }
+    
+    .menu-lista a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 18px 20px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        font-size: 17px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        text-align: center;
+    }
+    
+    .menu-lista a:hover {
+        background-color: #34495e;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-lista a.activo {
+        background-color: #3498db !important;
+        font-weight: 600;
+        border-color: #4eddf8;
+    }
+    
+    /* Contenido principal */
+    .contenido-principal {
+        flex: 1;
+    }
+    
+    .titulo-pagina {
+        color: #2c3e50;
+        font-size: 32px;
+        margin-bottom: 10px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #4eddf8;
+        text-align: center;
+    }
+    
+    .subtitulo-pagina {
+        color: #7f8c8d;
+        font-size: 18px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    /* Vista inicial - Descripción */
+    .vista-inicial {
+        background-color: white;
+        border-radius: 12px;
+        padding: 50px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .vista-inicial i {
+        font-size: 80px;
+        color: #3498db;
+        margin-bottom: 25px;
+        opacity: 0.7;
+    }
+    
+    .vista-inicial h3 {
+        font-size: 32px;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+    
+    .vista-inicial p {
+        color: #7f8c8d;
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto 15px;
+    }
+    
+    /* Vista de video */
+    .vista-video {
+        background-color: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        display: none;
+        animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .vista-video.activo {
+        display: block;
+    }
+    
+    .titulo-video {
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 28px;
+        text-align: center;
+    }
+    
+    .contenedor-video {
+        margin-bottom: 25px;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .miniatura-video {
+        width: 100%;
+        height: 500px;
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .miniatura-video img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    
+    .contenedor-video:hover .miniatura-video img {
+        transform: scale(1.05);
+    }
+    
+    .overlay-play {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .contenedor-video:hover .overlay-play {
+        opacity: 1;
+    }
+    
+    .boton-play {
+        background-color: #e74c3c;
+        color: white;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        transition: all 0.3s;
+        border: 5px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .contenedor-video:hover .boton-play {
+        transform: scale(1.1);
+        background-color: #c0392b;
+    }
+    
+    .descripcion-video {
+        color: #7f8c8d;
+        line-height: 1.8;
+        margin-bottom: 25px;
+        font-size: 17px;
+        text-align: center;
+        padding: 0 20px;
+    }
+    
+    .boton-youtube {
+        background-color: #e74c3c !important;
+        color: white !important;
+        border: none !important;
+        padding: 16px 35px !important;
+        border-radius: 6px !important;
+        cursor: pointer !important;
+        font-size: 17px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        transition: all 0.3s !important;
+        text-decoration: none !important;
+        margin: 0 auto;
+        display: block;
+        width: fit-content;
+    }
+    
+    .boton-youtube:hover {
+        background-color: #c0392b !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4) !important;
+    }
+    
+    .centrar-boton {
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+        .tutoriales-container {
+            flex-direction: column;
+        }
+        
+        .menu-lateral {
+            width: 100%;
+        }
+        
+        .miniatura-video {
+            height: 400px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .all {
+            padding: 20px;
+            margin: 20px auto;
+            width: calc(100% - 40px);
+        }
+        
+        .miniatura-video {
+            height: 350px;
+        }
+        
+        .titulo-pagina {
+            font-size: 28px;
+        }
+        
+        .vista-inicial {
+            padding: 30px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .all {
+            padding: 15px;
+            margin: 15px auto;
+            width: calc(100% - 30px);
+        }
+        
+        .miniatura-video {
+            height: 300px;
+        }
+        
+        .titulo-pagina {
+            font-size: 24px;
+        }
+        
+        .vista-inicial h3 {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<div class="all">
+    <div class="tutoriales-container">
+        <!-- Menú lateral izquierdo - MÁS EXTENDIDO -->
+        <div class="menu-lateral">
+            <h2>TUTORIALES</h2>
+            <ul class="menu-lista" id="menu-tutoriales">
+                <li><a href="#" class="menu-item" data-video="sesion">Iniciar sesión</a></li>
+                <li><a href="#" class="menu-item" data-video="convocatorias">Convocatorias</a></li>
+                <li><a href="#" class="menu-item" data-video="inscripcion">Inscripción de equipos y jugadores</a></li>
+                <li><a href="#" class="menu-item" data-video="calendario">Calendario de encuentros</a></li>
+                <li><a href="#" class="menu-item" data-video="resultados">Seguimiento de resultados</a></li>
+            </ul>
+        </div>
+        
+        <!-- Contenido principal -->
+        <div class="contenido-principal">
+            <h1 class="titulo-pagina">Tutoriales IMICU FIDE</h1>
+            <p class="subtitulo-pagina">Sistema de gestión deportiva y administrativa</p>
+            
+            <!-- Vista inicial - Descripción -->
+            <div class="vista-inicial" id="vista-inicial">
+                <i class="fas fa-play-circle"></i>
+                <h3>Bienvenido a los Tutoriales</h3>
+                <p>Selecciona uno de los tutoriales del menú lateral para ver el video instructivo correspondiente. Cada tutorial incluye una explicación detallada y un enlace directo a YouTube.</p>
+                <p>Utiliza los tutoriales para aprender a manejar todas las funciones del sistema IMICU FIDE.</p>
+                <p style="margin-top: 20px; font-style: italic; color: #3498db;">Haz clic en cualquier tutorial para comenzar</p>
+            </div>
+            
+            <!-- Video: Iniciar sesión -->
+            <div class="vista-video" id="video-sesion">
+                <h2 class="titulo-video">Iniciar sesión</h2>
+                
+                <div class="contenedor-video" data-link="https://youtu.be/2ucnHqQtVnM">
+                    <div class="miniatura-video">
+                        <img src="https://img.youtube.com/vi/2ucnHqQtVnM/maxresdefault.jpg" alt="Iniciar sesión" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/2ucnHqQtVnM/hqdefault.jpg'">
+                        <div class="overlay-play">
+                            <div class="boton-play">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="descripcion-video">
+                    Tutorial completo sobre el proceso de iniciar sesión en el sistema IMICU FIDE. Aprende a acceder a tu cuenta de manera segura y rápida, incluyendo la recuperación de contraseña si es necesario.
+                </p>
+                
+                <div class="centrar-boton">
+                    <a href="https://youtu.be/2ucnHqQtVnM" target="_blank" class="boton-youtube">
+                        <i class="fab fa-youtube"></i> Ver en YouTube
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Video: Convocatorias -->
+            <div class="vista-video" id="video-convocatorias">
+                <h2 class="titulo-video">Convocatorias</h2>
+                
+                <div class="contenedor-video" data-link="https://youtu.be/6J29eHLa-_k">
+                    <div class="miniatura-video">
+                        <img src="https://img.youtube.com/vi/6J29eHLa-_k/maxresdefault.jpg" alt="Convocatorias" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/6J29eHLa-_k/hqdefault.jpg'">
+                        <div class="overlay-play">
+                            <div class="boton-play">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="descripcion-video">
+                    Información sobre convocatorias activas. Aprende a crear, gestionar y eliminar convocatorias en el sistema. Este tutorial incluye instrucciones detalladas para eliminar una convocatoria cuando sea necesario.
+                </p>
+                
+                <div class="centrar-boton">
+                    <a href="https://youtu.be/6J29eHLa-_k" target="_blank" class="boton-youtube">
+                        <i class="fab fa-youtube"></i> Ver en YouTube
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Video: Inscripción de equipos y jugadores - CORREGIDO -->
+            <div class="vista-video" id="video-inscripcion">
+                <h2 class="titulo-video">Inscripción de equipos y jugadores</h2>
+                
+                <div class="contenedor-video" data-link="https://youtu.be/wpW_X1iMx8I">
+                    <div class="miniatura-video">
+                        <!-- CORREGIDO: Usando hqdefault que SIEMPRE funciona -->
+                        <img src="https://img.youtube.com/vi/wpW_X1iMx8I/hqdefault.jpg" alt="Inscripción de equipos y jugadores">
+                        <div class="overlay-play">
+                            <div class="boton-play">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="descripcion-video">
+                    Tutorial completo sobre el proceso de inscripción de equipos y jugadores en el sistema IMICU FIDE. Aprende a registrar nuevos participantes, completar toda la documentación requerida y gestionar la información de manera eficiente.
+                </p>
+                
+                <div class="centrar-boton">
+                    <a href="https://youtu.be/wpW_X1iMx8I" target="_blank" class="boton-youtube">
+                        <i class="fab fa-youtube"></i> Ver en YouTube
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Video: Calendario de encuentros -->
+            <div class="vista-video" id="video-calendario">
+                <h2 class="titulo-video">Calendario de encuentros</h2>
+                
+                <div class="contenedor-video" data-link="https://youtu.be/DOl4DpPwJnQ?feature=shared">
+                    <div class="miniatura-video">
+                        <img src="https://img.youtube.com/vi/DOl4DpPwJnQ/maxresdefault.jpg" alt="Calendario de encuentros" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/DOl4DpPwJnQ/hqdefault.jpg'">
+                        <div class="overlay-play">
+                            <div class="boton-play">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="descripcion-video">
+                    Tutorial sobre el calendario de encuentros. Aprende a gestionar y consultar el calendario deportivo de manera efectiva. Este tutorial cubre la programación de eventos, modificación de fechas y consulta del calendario completo.
+                </p>
+                
+                <div class="centrar-boton">
+                    <a href="https://youtu.be/DOl4DpPwJnQ?feature=shared" target="_blank" class="boton-youtube">
+                        <i class="fab fa-youtube"></i> Ver en YouTube
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Video: Seguimiento de resultados -->
+            <div class="vista-video" id="video-resultados">
+                <h2 class="titulo-video">Seguimiento de resultados</h2>
+                
+                <div class="contenedor-video" data-link="https://youtu.be/gQ9kN3rU6BM?si=QFfHHIWCmu7YXfvw">
+                    <div class="miniatura-video">
+                        <img src="https://img.youtube.com/vi/gQ9kN3rU6BM/maxresdefault.jpg" alt="Seguimiento de resultados" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/gQ9kN3rU6BM/hqdefault.jpg'">
+                        <div class="overlay-play">
+                            <div class="boton-play">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="descripcion-video">
+                    Tutorial completo sobre el seguimiento de resultados en el sistema IMICU FIDE. Aprende a registrar, consultar y analizar los resultados de encuentros deportivos, generar estadísticas y crear reportes personalizados.
+                </p>
+                
+                <div class="centrar-boton">
+                    <a href="https://youtu.be/gQ9kN3rU6BM?si=QFfHHIWCmu7YXfvw" target="_blank" class="boton-youtube">
+                        <i class="fab fa-youtube"></i> Ver en YouTube
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    const vistaInicial = document.getElementById('vista-inicial');
+    const videos = document.querySelectorAll('.vista-video');
+    const contenedoresVideo = document.querySelectorAll('.contenedor-video');
+    
+    // Función para mostrar un video
+    function mostrarVideo(videoId) {
+        // Ocultar vista inicial
+        vistaInicial.style.display = 'none';
+        
+        // Ocultar todos los videos
+        videos.forEach(video => {
+            video.classList.remove('activo');
+        });
+        
+        // Mostrar el video seleccionado
+        const videoSeleccionado = document.getElementById(`video-${videoId}`);
+        if (videoSeleccionado) {
+            videoSeleccionado.classList.add('activo');
+            videoSeleccionado.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Actualizar menú activo
+        menuItems.forEach(item => {
+            item.classList.remove('activo');
+        });
+        
+        const itemActivo = document.querySelector(`[data-video="${videoId}"]`);
+        if (itemActivo) {
+            itemActivo.classList.add('activo');
+        }
+    }
+    
+    // Asignar eventos a los items del menú
+    menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const videoId = this.getAttribute('data-video');
+            mostrarVideo(videoId);
+        });
+    });
+    
+    // Asignar eventos a los contenedores de video
+    contenedoresVideo.forEach(contenedor => {
+        contenedor.addEventListener('click', function() {
+            const youtubeLink = this.getAttribute('data-link');
+            if (youtubeLink) {
+                window.open(youtubeLink, '_blank');
+            }
+        });
+    });
+    
+    // Mostrar vista inicial por defecto
+    vistaInicial.style.display = 'block';
+});
+</script>
+{% endblock %}
